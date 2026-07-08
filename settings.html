@@ -1,0 +1,54 @@
+<div class="igs-container">
+    <!-- Master Drawer wrapper -->
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b>Image Generation Suite</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+
+            <!-- Profile Management Selector Bar -->
+            <div class="igs-profile-bar">
+                <select id="igs_profile_select" class="text_pole" title="Select Profile"></select>
+                <div class="igs-profile-actions">
+                    <div id="igs_profile_add" class="menu_button menu_button_icon" title="New Profile">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div id="igs_profile_duplicate" class="menu_button menu_button_icon" title="Duplicate Profile">
+                        <i class="fa-solid fa-copy"></i>
+                    </div>
+                    <div id="igs_profile_rename" class="menu_button menu_button_icon" title="Rename Profile">
+                        <i class="fa-solid fa-pencil"></i>
+                    </div>
+                    <div id="igs_profile_delete" class="menu_button menu_button_icon" title="Delete Profile">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                    <div id="igs_profile_export" class="menu_button menu_button_icon" title="Export Profile">
+                        <i class="fa-solid fa-file-export"></i>
+                    </div>
+                    <div id="igs_profile_import" class="menu_button menu_button_icon" title="Import Profile">
+                        <i class="fa-solid fa-file-import"></i>
+                    </div>
+                </div>
+                <input type="file" id="igs_profile_import_file" accept=".json" style="display: none;">
+            </div>
+
+            <!-- Enable Extension Toggle -->
+            <div class="igs-field" style="margin-top: 8px;">
+                <label class="igs-toggle-row" for="igs_extension_enabled">
+                    <input type="checkbox" id="igs_extension_enabled" class="checkbox">
+                    <span class="igs-label-text">Enable Extension</span>
+                </label>
+            </div>
+
+            <!-- Open Settings Button -->
+            <div style="margin-top: 8px;">
+                <button id="igs_open_settings" class="menu_button" style="width: 100%;">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Open Settings</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

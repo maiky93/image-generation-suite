@@ -1,0 +1,1153 @@
+/* ============================================
+ * Image Generation Suite (IGS) - Extension Styles
+ * ============================================
+ * All custom classes prefixed with .igs- to avoid conflicts.
+ * Uses SillyTavern CSS variables for theme consistency.
+ * ============================================ */
+
+/* === Main Container === */
+.igs-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* === Profile Management Bar === */
+.igs-profile-bar {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.igs-profile-bar select {
+    flex: 1;
+}
+
+.igs-profile-bar .menu_button {
+    padding: 3px 6px;
+    font-size: 14px;
+}
+
+/* === Profile Action Buttons === */
+.igs-profile-actions {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+/* === Connection Status Indicator === */
+.igs-connection-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.igs-connection-status .igs-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.igs-connection-status .igs-status-dot.connected {
+    background-color: #4caf50;
+}
+
+.igs-connection-status .igs-status-dot.disconnected {
+    background-color: #f44336;
+}
+
+/* === LoRA Entries === */
+.igs-lora-entry {
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.1));
+}
+
+.igs-lora-entry-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+/* === LoRA Trigger Tags === */
+.igs-trigger-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 5px 0;
+}
+
+.igs-trigger-tag {
+    background: var(--SmartThemeQuoteColor, #366);
+    color: var(--SmartThemeBodyColor, #ccc);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.igs-trigger-tag .igs-tag-remove {
+    cursor: pointer;
+    opacity: 0.6;
+    font-size: 0.8em;
+}
+
+.igs-trigger-tag .igs-tag-remove:hover {
+    opacity: 1;
+}
+
+/* === Trigger Input Area === */
+.igs-trigger-input-container {
+    display: flex;
+    gap: 4px;
+}
+
+.igs-trigger-input-container input {
+    flex: 1;
+}
+
+.igs-trigger-input-container .menu_button {
+    flex-shrink: 0;
+}
+
+/* === Slider Containers === */
+.igs-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.igs-slider-container input[type="range"] {
+    flex: 1;
+}
+
+.igs-slider-container input[type="number"] {
+    width: 60px;
+}
+
+/* === Hidden File Input for Profile Import === */
+#igs_profile_import_file {
+    display: none;
+}
+
+/* === Server-Type Conditional Visibility === */
+/* Shown/hidden via JS based on selected serverType */
+.igs-comfy-only {
+    /* controlled by JS */
+}
+
+.igs-auto-only {
+    /* controlled by JS */
+}
+
+/* === Drawer Content Spacing === */
+.igs-container .inline-drawer-content > div {
+    margin-bottom: 8px;
+}
+
+.igs-container .inline-drawer-content label {
+    margin-bottom: 3px;
+}
+
+/* === Info Tooltip Icon === */
+.igs-info-icon {
+    cursor: help;
+    opacity: 0.6;
+    font-size: 0.9em;
+    margin-left: 4px;
+}
+
+.igs-info-icon:hover {
+    opacity: 1;
+}
+
+/* === Inline Group (select + icon button) === */
+.igs-inline-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.igs-inline-group select {
+    flex: 1;
+    min-width: 0;
+}
+
+/* === Slider Row Layout === */
+.igs-slider-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.igs-slider-row > div {
+    min-width: 0;
+}
+
+/* === Section Divider === */
+.igs-container hr {
+    border: none;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    margin: 12px 0;
+}
+
+/* === Draggable Styles Window === */
+.igs-draggable-window {
+    position: fixed;
+    z-index: 9999;
+    width: 420px;
+    background: var(--SmartThemeWindowColor, rgba(20, 20, 20, 0.95));
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    display: none;
+    flex-direction: column;
+    overflow: visible;
+    backdrop-filter: blur(10px);
+}
+
+.igs-window-header {
+    background: var(--SmartThemeHeaderColor, #222);
+    padding: 8px 12px;
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #444);
+    font-weight: bold;
+    user-select: none;
+    border-radius: 8px 8px 0 0;
+}
+
+.igs-window-header .igs-window-close {
+    cursor: pointer;
+    opacity: 0.7;
+    font-size: 1.1em;
+}
+
+.igs-window-header .igs-window-close:hover {
+    opacity: 1;
+    color: #f44336;
+}
+
+.igs-window-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.igs-window-content select {
+    width: 100%;
+}
+
+/* === Hub Window Layout === */
+.igs-hub-layout {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    overflow: visible;
+}
+
+.igs-hub-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-left: 1px solid var(--SmartThemeBorderColor, #444);
+    overflow: hidden;
+}
+
+/* === Hub Tab Bar === */
+.igs-hub-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #444);
+    flex-shrink: 0;
+}
+
+.igs-hub-tab {
+    flex: 1;
+    padding: 5px 8px;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--SmartThemeBodyColor, #999) !important;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: none !important;
+}
+
+.igs-hub-tab:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--SmartThemeBodyColor, #ccc) !important;
+}
+
+.igs-hub-tab.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+    border-bottom: 2px solid var(--SmartThemeAccentColor, #f1c40f) !important;
+}
+
+.igs-hub-tab i {
+    font-size: 0.7rem;
+}
+
+/* === Hub Tab Panels === */
+.igs-hub-tab-panel {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.igs-hub-tab-panel.active {
+    display: flex;
+}
+
+.igs-hub-preview {
+    flex: 0 0 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.igs-hub-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.igs-hub-row label {
+    margin: 0;
+}
+
+.igs-hub-row .text_pole,
+.igs-hub-row .igs-custom-select {
+    width: 100%;
+}
+
+.igs-hub-divider {
+    border: none;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    margin: 4px 0;
+}
+
+/* === Hub Footer Bar === */
+.igs-hub-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    gap: 8px;
+}
+
+.igs-hub-footer-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 1px solid var(--SmartThemeBorderColor, #555) !important;
+    border-radius: 5px;
+    background: transparent !important;
+    color: var(--SmartThemeBodyColor, #ccc) !important;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    box-shadow: none !important;
+}
+
+.igs-hub-footer-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
+}
+
+.igs-hub-footer-btn i {
+    font-size: 0.9rem;
+}
+
+/* === Style Preview Container === */
+#igs_window_preview_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.igs-window-preview-img-wrapper {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border-radius: 4px;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.igs-window-preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 3px;
+}
+
+.igs-window-desc {
+    font-size: 0.8em;
+    color: var(--SmartThemeBodyColor, #aaa);
+    text-align: center;
+    margin-top: 6px;
+    word-break: break-word;
+    flex-shrink: 0;
+}
+
+/* === Hub Macro Controls === */
+.igs-hub-macros {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.igs-hub-macros-empty {
+    color: var(--SmartThemeBodyColor, #888);
+    text-align: center;
+    padding: 16px 8px;
+    opacity: 0.7;
+}
+
+.igs-hub-macro-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.igs-hub-macro-row select,
+.igs-hub-macro-row input[type="number"] {
+    width: 100%;
+}
+
+.igs-hub-macro-bool {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* === Macro Type Badges === */
+.igs-macro-type-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.igs-macro-type-list { background: #2d5a9e; color: #c9dfff; }
+.igs-macro-type-bool { background: #5a2d9e; color: #dcc9ff; }
+.igs-macro-type-int { background: #2d9e5a; color: #c9ffd9; }
+.igs-macro-type-float { background: #9e6f2d; color: #ffecc9; }
+
+/* === Macro Option Entries (Modal Editor) === */
+.igs-macro-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.igs-macro-option-entry {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.igs-macro-option-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.igs-macro-option-fields input,
+.igs-macro-option-fields textarea {
+    width: 100%;
+}
+
+.igs-macro-option-entry .menu_button {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    margin-top: 2px;
+}
+
+/* === Modal Divider === */
+.igs-modal-divider {
+    border: none;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    margin: 12px 0;
+}
+
+/* === Empty Editor Placeholder === */
+.igs-modal-empty-editor {
+    color: var(--SmartThemeBodyColor, #888);
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+}
+
+/* === Styles Scroll Container === */
+#igs_styles_scroll_container {
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 5px;
+    padding: 8px;
+    margin-top: 5px;
+    background: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.05));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* === LoRA Scroll Container === */
+#igs_lora_scroll_container {
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 5px;
+    padding: 8px;
+    margin-top: 5px;
+    background: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.05));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* === Styles Scroll Container Scrollbar === */
+#igs_styles_scroll_container::-webkit-scrollbar {
+    width: 6px;
+}
+#igs_styles_scroll_container::-webkit-scrollbar-thumb {
+    background: var(--SmartThemeBorderColor, #444);
+    border-radius: 3px;
+}
+#igs_styles_scroll_container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* === LoRA Scroll Container Scrollbar === */
+#igs_lora_scroll_container::-webkit-scrollbar {
+    width: 6px;
+}
+#igs_lora_scroll_container::-webkit-scrollbar-thumb {
+    background: var(--SmartThemeBorderColor, #444);
+    border-radius: 3px;
+}
+#igs_lora_scroll_container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* === Styles Scroll List Item === */
+.igs-style-item {
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 5px;
+    padding: 10px;
+    background: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.15));
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.igs-style-item-delete {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    cursor: pointer;
+    opacity: 0.6;
+    color: #f44336;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.igs-style-item-delete:hover {
+    opacity: 1 !important;
+}
+
+.igs-style-item label {
+    margin-bottom: 2px;
+    display: block;
+}
+
+.igs-style-item-preview-box {
+    text-align: center;
+    margin-top: 4px;
+}
+
+.igs-style-item-preview-box img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 4px;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+}
+
+/* ============================================================
+   SETTINGS MODAL
+   ============================================================ */
+.igs-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99990;
+}
+
+.igs-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85vw;
+    max-width: 1100px;
+    height: 80vh;
+    max-height: 750px;
+    background: var(--SmartThemeBlurTintColor, #1a1a2e);
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 10px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+    z-index: 99995;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.igs-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--SmartThemeHeaderColor, rgba(255, 255, 255, 0.04));
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #444);
+    flex-shrink: 0;
+}
+
+.igs-modal-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--SmartThemeBodyColor, #ccc);
+}
+
+.igs-modal-close {
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--SmartThemeBodyColor, #888);
+    transition: color 0.15s ease;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+}
+
+.igs-modal-close:hover {
+    color: #fff;
+}
+
+.igs-modal-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* === Modal Sidebar (Tab Navigation) === */
+.igs-modal-sidebar {
+    width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-right: 1px solid var(--SmartThemeBorderColor, #444);
+    overflow-y: auto;
+}
+
+.igs-modal-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: none !important;
+    border-radius: 6px;
+    background: transparent !important;
+    color: var(--SmartThemeBodyColor, #999) !important;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+    width: 100%;
+    box-shadow: none !important;
+}
+
+.igs-modal-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--SmartThemeBodyColor, #ccc) !important;
+}
+
+.igs-modal-tab-btn.active {
+    background: var(--SmartThemeBorderColor, rgba(255, 255, 255, 0.1)) !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.igs-modal-tab-btn i {
+    width: 18px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* === Modal Content Area === */
+.igs-modal-content {
+    flex: 1;
+    padding: 18px 22px;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.igs-modal-content h3 {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--SmartThemeBodyColor, #ddd);
+}
+
+/* === Modal Form Fields === */
+.igs-modal-field {
+    margin-bottom: 16px;
+}
+
+.igs-modal-field:last-child {
+    margin-bottom: 0;
+}
+
+.igs-modal-field label:not(.igs-toggle-row):not(.checkbox_label) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--SmartThemeBodyColor, #ccc);
+}
+
+.igs-modal-field .igs-hint {
+    font-size: 0.8rem;
+    color: rgba(200, 210, 230, 0.65);
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.igs-modal-field .igs-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.igs-modal-field .igs-label-text {
+    font-size: 0.9rem;
+    color: var(--SmartThemeBodyColor, #ccc);
+}
+
+/* === List + Editor Split Layout === */
+.igs-modal-list-editor {
+    display: flex;
+    gap: 16px;
+    height: 100%;
+    min-height: 350px;
+}
+
+.igs-modal-item-list {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.igs-modal-item-list-header {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #444);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--SmartThemeBodyColor, #bbb);
+}
+
+.igs-modal-item-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.igs-modal-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--SmartThemeBodyColor, #bbb);
+    transition: background 0.12s ease;
+    gap: 4px;
+}
+
+.igs-modal-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.igs-modal-item.active {
+    background: var(--SmartThemeBorderColor, rgba(255, 255, 255, 0.1));
+    color: #fff;
+    font-weight: 600;
+}
+
+.igs-modal-item-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.igs-modal-item-list-footer {
+    padding: 6px;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    display: flex;
+    justify-content: center;
+}
+
+.igs-modal-item-editor {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
+}
+
+.igs-modal-item-editor-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--SmartThemeBodyColor, #666);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* === Modal Section Divider === */
+.igs-modal-divider {
+    border: none;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+    margin: 14px 0;
+}
+
+/* === Modal Profile Bar (inside modal header) === */
+.igs-modal-profile-bar {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-left: 16px;
+}
+
+.igs-modal-profile-bar select {
+    max-width: 180px;
+}
+
+.igs-modal-profile-bar .menu_button {
+    padding: 3px 6px;
+    font-size: 13px;
+}
+
+/* ============================================================
+   DOCKABLE / COLLAPSIBLE SIDE DRAWER
+   ============================================================ */
+.igs-draggable-window {
+    transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                right 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Snapped to left screen edge */
+.igs-draggable-window.igs-docked-left {
+    border-radius: 0 8px 8px 0 !important;
+    border-left: none !important;
+}
+
+/* Snapped to right screen edge */
+.igs-draggable-window.igs-docked-right {
+    border-radius: 8px 0 0 8px !important;
+    border-right: none !important;
+}
+
+/* Collapsed docked drawer state (thin vertical tab) */
+.igs-draggable-window.igs-collapsed {
+    width: 32px !important;
+    height: 180px !important;
+    cursor: pointer;
+}
+
+.igs-draggable-window.igs-collapsed .igs-window-header,
+.igs-draggable-window.igs-collapsed .igs-window-content,
+.igs-draggable-window.igs-collapsed .igs-hub-footer,
+.igs-draggable-window.igs-collapsed .ui-resizable-handle {
+    display: none !important;
+}
+
+/* Vertical tab handle bar shown when collapsed */
+.igs-dock-handle {
+    display: none;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--SmartThemeHeaderColor, #222);
+    color: var(--SmartThemeBodyColor, #ccc);
+    font-size: 1.2rem;
+    border-radius: inherit;
+    transition: background 0.2s ease;
+    user-select: none;
+}
+
+.igs-draggable-window.igs-collapsed .igs-dock-handle {
+    display: flex !important;
+}
+
+.igs-dock-handle:hover {
+    background: var(--SmartThemeBorderColor, #444);
+    color: #fff;
+}
+
+/* South-East Resize Corner Grip */
+.igs-draggable-window .ui-resizable-se {
+    width: 12px;
+    height: 12px;
+    right: 3px;
+    bottom: 3px;
+    background: transparent;
+    border-right: 2px solid var(--SmartThemeBorderColor, #555);
+    border-bottom: 2px solid var(--SmartThemeBorderColor, #555);
+    cursor: se-resize;
+    position: absolute;
+}
+.igs-draggable-window .ui-resizable-se:hover {
+    border-right: 2px solid var(--SmartThemeBodyColor, #bbb);
+    border-bottom: 2px solid var(--SmartThemeBodyColor, #bbb);
+}
+
+/* === Custom Style Select Dropdown === */
+.igs-custom-select {
+    position: relative;
+    user-select: none;
+    width: 100%;
+}
+
+.igs-custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: var(--SmartThemeInputColor, #111);
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--SmartThemeBodyColor, #ccc);
+    transition: border-color 0.15s ease;
+}
+
+.igs-custom-select-trigger:hover {
+    border-color: var(--SmartThemeBodyColor, #888);
+}
+
+.igs-custom-select-options {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--SmartThemeWindowColor, rgba(20, 20, 20, 0.98));
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    max-height: 180px;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+}
+
+.igs-custom-select-options.open {
+    display: flex;
+}
+
+.igs-custom-select-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--SmartThemeBodyColor, #ccc);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.igs-custom-select-option:hover {
+    background: var(--SmartThemeQuoteColor, #366);
+    color: #fff;
+}
+
+.igs-custom-select-option.selected {
+    background: var(--SmartThemeBorderColor, rgba(255,255,255,0.1));
+    font-weight: bold;
+}
+
+/* === Floating Cursor Dropdown Preview Tooltip === */
+#igs_dropdown_preview_tooltip {
+    position: fixed;
+    z-index: 100005;
+    pointer-events: none;
+    display: none;
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 5px;
+    background: #000;
+    padding: 3px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85);
+    width: 160px;
+    height: 120px;
+    overflow: hidden;
+}
+
+#igs_dropdown_preview_tooltip img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 3px;
+}
+
+/* === Workflow Management === */
+.igs-workflow-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.igs-workflow-bar select {
+    flex: 1;
+}
+
+.igs-workflow-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+/* === Workflow Editor Popup === */
+.igs-workflow-editor-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.igs-workflow-editor-popup {
+    background: var(--SmartThemeBlurTintColor, #1a1a2e);
+    border: 1px solid var(--SmartThemeBorderColor, #444);
+    border-radius: 8px;
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.igs-workflow-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #444);
+}
+
+.igs-workflow-editor-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.igs-workflow-editor-close {
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.igs-workflow-editor-close:hover {
+    opacity: 1;
+}
+
+.igs-workflow-editor-textarea {
+    flex: 1;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    resize: none;
+    border: none;
+    background: var(--SmartThemeBlurTintColor, #111);
+    color: var(--SmartThemeBodyColor, #ddd);
+}
+
+.igs-workflow-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--SmartThemeBorderColor, #444);
+}

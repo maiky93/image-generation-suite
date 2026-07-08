@@ -1,0 +1,423 @@
+# Image Generation Suite
+
+A fully standalone SillyTavern extension that adds automated image generation to your chats. The extension monitors conversations, injects prompts to make the LLM produce image descriptions, detects those descriptions, and sends them to ComfyUI or A1111/Forge for generation — all automatically.
+
+Everything is organized through a **profile system** so you can save, swap, and share complete configurations for different characters, art styles, or workflows.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [The Suite Hub](#the-suite-hub)
+- [Settings Tabs](#settings-tabs)
+  - [Suite Hub Settings](#suite-hub-settings)
+  - [Prompt Injection](#prompt-injection)
+  - [Detection Settings](#detection-settings)
+  - [Connection](#connection)
+  - [Prompt Construction](#prompt-construction)
+  - [Styles](#styles)
+  - [Characters](#characters)
+  - [LoRAs](#loras)
+- [Profile System](#profile-system)
+- [Custom Macros](#custom-macros)
+- [Macro Reference](#macro-reference)
+- [ComfyUI Workflow Placeholders](#comfyui-workflow-placeholders)
+- [FAQ / Troubleshooting](#faq--troubleshooting)
+- [License](#license)
+
+---
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Profile System** | Save/load/duplicate/import/export complete configurations as JSON. Switch between setups instantly. |
+| **Prompt Injection** | Configurable LLM prompt template with frequency control — tells the LLM to include image descriptions. |
+| **Custom Macros** | Define your own `{macroId}` placeholders (list, bool, int, float) and adjust them live from the Suite Hub. |
+| **Regex Detection** | Customizable regex to detect image prompts in assistant messages and extract them for generation. |
+| **Connection Management** | Direct ComfyUI and A1111/Forge connection with full workflow management (create, edit, rename, delete). |
+| **Prompt Construction** | Template-based prompt building with prefix/suffix, style content, and LoRA tags — fully customizable. |
+| **Styles** | Named style profiles with preview images. Switch art styles from the hub without editing prompts. |
+| **Characters** | Define character appearances and outfits. Selected character descriptions are injected into the generation prompt. |
+| **LoRA Lorebook** | Trigger-based LoRA entries that activate when keywords appear in recent messages. Optional AI agent classification. |
+| **Image Insertion** | Multiple insert modes (in-message, new message) with LLM hiding to keep image data out of context. |
+| **Suite Hub** | A floating, dockable control panel for quick access to character/style selection, prompt tweaks, and macros. |
+
+---
+
+## Installation
+
+1. Place this folder in your SillyTavern extensions directory:
+   ```
+   SillyTavern/data/default-user/extensions/third_party/image-generation-suite
+   ```
+2. Restart SillyTavern.
+3. Open **Extensions** in the top bar → find **Image Generation Suite** → expand it.
+4. Check **Enable Extension** and click **Open Settings** to configure.
+
+### Requirements
+
+- SillyTavern (latest recommended)
+- A local **ComfyUI** or **A1111 / Forge** instance running with API access enabled
+- For A1111: launch with `--api` flag
+- For ComfyUI: default setup works out of the box
+
+---
+
+## Quick Start
+
+1. **Enable the extension** in the drawer panel.
+2. **Open Settings** → go to the **Connection** tab.
+3. Select your server type (ComfyUI or A1111), enter the URL, and click the connect button.
+4. Select your model, sampler, and desired resolution.
+5. Go to the **Prompt Injection** tab → enable prompt injection. The default template works out of the box.
+6. Start chatting — the extension will inject an image generation prompt every N messages (default: 1) and automatically generate images from the LLM's response.
+
+---
+
+## The Suite Hub
+
+The **Suite Hub** is a floating, draggable window that provides quick access to the most commonly adjusted settings without opening the full settings modal.
+
+- **Drag** it anywhere on screen.
+- **Dock** it to the left or right edge of the viewport — it collapses into a slim sidebar tab and expands on hover.
+- **Close** it with the X button; toggle visibility with the `/suitehub` slash command or the Suite Hub Settings toggle.
+
+### Controls Tab
+
+| Control | Description |
+|---------|-------------|
+| **Character** | Quick-select which character's appearance prompt is used. |
+| **Prompt Addition** | Extra positive prompt text appended to every generation. |
+| **Negative Addition** | Extra negative prompt text appended to every generation. |
+| **Style** | Quick-select art style from your active style profile (with preview thumbnails). |
+
+### Macros Tab
+
+Displays all custom macros you've defined in the Prompt Injection settings. Adjust values in real-time:
+- **List macros** → dropdown selector (shows label, uses substitution text)
+- **Bool macros** → on/off toggle
+- **Int/Float macros** → number input with min/max/step constraints
+
+---
+
+## Settings Tabs
+
+Click **Open Settings** to access the full settings modal. Each tab is described below.
+
+### Suite Hub Settings
+
+| Setting | Description |
+|---------|-------------|
+| **Show Suite Hub Window** | Toggle the floating hub window on/off. |
+| **Show Style Previews** | Show style preview images in the hub's style dropdown. |
+
+---
+
+### Prompt Injection
+
+Controls how and when the extension asks the LLM to produce image descriptions.
+
+| Setting | Description |
+|---------|-------------|
+| **Enable Prompt Injection** | Master toggle. When on, the prompt template is injected into the conversation. |
+| **Injection Frequency** | Generate an image every N messages (e.g., 3 = every 3rd message). |
+| **Prompt Template** | The full injection prompt sent to the LLM. Use `{macroId}` to insert custom macro values. |
+| **Position & Depth** | Where in the conversation history the injection is placed (System/User/Assistant, with depth control). |
+| **Character Defining Prompt** | Appended when a character is selected. Use `{character}` and `{outfits}` placeholders. |
+
+Below the injection settings is the **Custom Macros** editor — see [Custom Macros](#custom-macros) for details.
+
+---
+
+### Detection Settings
+
+Controls how image prompts are extracted from LLM output.
+
+| Setting | Description |
+|---------|-------------|
+| **Insert Type** | How the generated image is inserted: `New Message` (separate message) or `In Message` (embedded in the assistant's message). |
+| **Regex Pattern** | The regex used to detect image tags. Default: `/\<pic="(.*?)"\s*\/?\s*\>/g` — captures content inside `<pic="...">` tags. |
+| **Hide from LLM** | When enabled, generated image messages are excluded from the LLM's context window. |
+
+---
+
+### Connection
+
+Configure your image generation backend.
+
+| Setting | Description |
+|---------|-------------|
+| **Server Type** | `ComfyUI` or `A1111 / Forge`. |
+| **URL** | ComfyUI default: `http://127.0.0.1:8188` · A1111 default: `http://localhost:7860` |
+| **Auth** | A1111 only — optional `user:password` for API authentication. |
+| **Model / VAE / Sampler / Scheduler** | Populated from the server after connecting. |
+| **Steps / CFG Scale / Width / Height** | Standard generation parameters. |
+| **Denoising Strength** | For img2img workflows. |
+| **Clip Skip** | CLIP skip layers (1–12). |
+| **Seed** | Use -1 for random. |
+
+#### ComfyUI Workflow Management (W.I.P.)
+
+When using ComfyUI, you get full workflow CRUD:
+- **Edit** — Open a full-screen JSON editor for the selected workflow.
+- **New** — Create a new empty workflow and open the editor.
+- **Rename** — Rename the selected workflow file.
+- **Delete** — Remove the selected workflow.
+
+See [ComfyUI Workflow Placeholders](#comfyui-workflow-placeholders) for the template variables you can use in workflows.
+
+---
+
+### Prompt Construction
+
+Controls how the final Stable Diffusion prompt is assembled from all the pieces.
+
+| Setting | Description |
+|---------|-------------|
+| **Prompt Prefix** | Always prepended (e.g., `best quality, absurdres, aesthetic`). |
+| **Negative Prefix** | Always prepended to negative (e.g., `lowres, bad anatomy, ...`). |
+| **Prompt Suffix** | Always appended after everything else. |
+| **Negative Suffix** | Always appended to negative. |
+| **Positive Template** | Defines the assembly order. Default: `{prefix}, {prompt}, {promptExtra}, {style}, {loras}, {suffix}` |
+| **Negative Template** | Default: `{negativePrefix}, {negative}, {negativeExtra}, {negativeSuffix}` |
+
+---
+
+### Styles
+
+Named art style definitions organized into **style profiles**. Each profile can contain multiple styles.
+
+| Feature | Description |
+|---------|-------------|
+| **Style Profiles** | Group styles together (e.g., "Anime Styles", "Realistic Styles"). Switch between groups per main profile. |
+| **Style Name** | Display name shown in the hub dropdown. |
+| **Style Content** | The actual prompt text inserted as `{style}` in the positive template. |
+| **Preview Image** | Optional base64 preview shown in the hub's style dropdown. |
+| **Import/Export** | Share style profiles as JSON files. |
+
+---
+
+### Characters
+
+Define character appearances for consistent image generation. Organized into **character profiles**.
+
+| Feature | Description |
+|---------|-------------|
+| **Character Profiles** | Group characters (e.g., "Fantasy RP Characters", "Sci-Fi Characters"). Different main profiles can reference different character sets. |
+| **Character Name** | Display name shown in the hub dropdown. |
+| **Character Prompt** | The appearance description injected via the `{character}` placeholder. |
+| **Outfits** | Named outfit descriptions. All outfits are listed via the `{outfits}` placeholder so the LLM can pick one contextually. |
+
+---
+
+### LoRAs (W.I.P)
+
+Trigger-based LoRA entries that activate when keywords appear in recent chat messages.
+
+| Feature | Description |
+|---------|-------------|
+| **LoRA Profiles** | Group LoRA sets by use case (e.g., "Anime LoRAs", "Realism LoRAs"). |
+| **Description** | What this LoRA represents — used for AI agent classification. |
+| **Prompt / Content** | The LoRA tag and associated prompt keywords (e.g., `<lora:cyber_arm:1.0>, cybernetic details`). |
+| **Trigger Words** | Keywords that activate this entry when found in recent messages. |
+| **Case Sensitive** | Whether trigger matching is case-sensitive. |
+| **Enabled** | Toggle individual entries on/off. |
+
+#### AI LoRA Agent (Disabled)
+
+An optional LLM-powered classification system for smarter LoRA matching:
+
+| Setting | Description |
+|---------|-------------|
+| **Enable AI LoRA Agent** | Uses a secondary LLM call to classify which LoRAs are relevant to the current scene. |
+| **Min / Max Matches** | Constrain how many LoRAs the AI can select per message. |
+| **Connection Profile** | Which SillyTavern API connection to use for the classification call. |
+
+---
+
+## Profile System
+
+The extension uses a **nested profile architecture**:
+
+```
+Main Profile (e.g., "My Fantasy Setup")
+├── Connection settings (server, model, resolution, etc.)
+├── Prompt injection settings (template, frequency, position)
+├── Prompt construction settings (templates, prefix/suffix)
+├── Detection settings (regex, insert type)
+├── Custom macros
+├── Hub extras (prompt addition, negative addition)
+├── Active Style Profile → points to a Style Profile
+├── Active Character Profile → points to a Character Profile
+└── Active LoRA Profile → points to a LoRA Profile
+
+Style Profiles (global, shared across main profiles)
+├── "Anime Styles" → [Style 1, Style 2, ...]
+└── "Realistic Styles" → [Style 1, Style 2, ...]
+
+Character Profiles (global, shared)
+├── "Fantasy Characters" → [Character 1, Character 2, ...]
+└── "Sci-Fi Characters" → [Character 1, Character 2, ...]
+
+LoRA Profiles (global, shared)
+├── "Anime LoRAs" → [Entry 1, Entry 2, ...]
+└── "Realism LoRAs" → [Entry 1, Entry 2, ...]
+```
+
+**Key concept**: Style, Character, and LoRA profiles are **global collections**. Each main profile simply holds a *reference* to which one it uses. This means:
+- You can share the same style profile across multiple main profiles.
+- Switching main profiles can switch all three sub-profiles at once.
+- You can export/import sub-profiles independently.
+
+### Profile Actions
+
+Available on the main profile bar and each sub-profile bar:
+
+| Action | Icon | Description |
+|--------|------|-------------|
+| **Add** | ➕ | Create a new profile |
+| **Duplicate** | 📋 | Clone the current profile |
+| **Rename** | ✏️ | Rename the current profile |
+| **Delete** | 🗑️ | Delete (cannot delete last profile) |
+| **Export** | 📤 | Download as JSON file |
+| **Import** | 📥 | Upload a JSON file |
+
+---
+
+## Custom Macros
+
+Custom macros let you define dynamic `{macroId}` placeholders in your prompt injection template that can be adjusted in real-time from the Suite Hub window.
+
+### Macro Types
+
+| Type | Hub Control | Use Case |
+|------|------------|----------|
+| **List** | Dropdown selector | Predefined options. Each option has a **label** (shown in dropdown) and **text** (substituted). E.g., perspectives, moods, camera angles. |
+| **Bool** | On/Off toggle | When ON, inserts the defined text. When OFF, inserts nothing. E.g., "include background description". |
+| **Int** | Number input | Integer value with min/max/step constraints. E.g., "number of characters in scene". |
+| **Float** | Number input | Decimal value with min/max/step constraints. E.g., "detail level 0.0–1.0". |
+
+### Example
+
+Define a macro with ID `perspective`:
+- **Type**: List
+- **Options**: 
+  - Label: `First person` → Text: `generate as if the image is from the first-person perspective of {{user}}`
+  - Label: `Third person` → Text: `generate as if the image is from a third-person perspective`
+  - Label: `Birds eye` → Text: `generate as if the image is from a bird's-eye view looking down`
+
+Then use it in your prompt template:
+```
+When generating an image prompt, {perspective}. Format it as <pic="your prompt here">.
+```
+
+The selected option's text will be substituted for `{perspective}` at injection time.
+
+### Reserved IDs
+
+The following macro IDs are reserved and cannot be used for custom macros:
+`prefix`, `prompt`, `style`, `styles`, `suffix`, `loras`, `promptExtra`, `negativeExtra`, `negativePrefix`, `negative`, `negativeSuffix`, `character`, `outfits`
+
+---
+
+## Macro Reference
+
+### Prompt Construction Macros
+
+Used in the **Positive Template** and **Negative Template** fields:
+
+| Macro | Description | Used In |
+|-------|-------------|---------|
+| `{prefix}` | Prompt Prefix content | Positive |
+| `{prompt}` | The raw prompt extracted from the LLM's image tag | Positive |
+| `{promptExtra}` | Hub "Prompt Addition" field | Positive |
+| `{style}` / `{styles}` | Active style's content text | Positive |
+| `{loras}` | Compiled LoRA prompt tags from matched triggers | Positive |
+| `{suffix}` | Prompt Suffix content | Positive |
+| `{negativePrefix}` | Negative Prefix content | Negative |
+| `{negative}` | Any extracted negative prompt | Negative |
+| `{negativeExtra}` | Hub "Negative Addition" field | Negative |
+| `{negativeSuffix}` | Negative Suffix content | Negative |
+
+### Character Defining Macros
+
+Used in the **Character Defining Prompt** field:
+
+| Macro | Description |
+|-------|-------------|
+| `{character}` | The selected character's prompt/appearance description |
+| `{outfits}` | Comma-separated list of all outfit descriptions for the selected character |
+
+### Custom User Macros
+
+Used in the **Prompt Template** (injection prompt) field:
+
+| Syntax | Description |
+|--------|-------------|
+| `{macroId}` | Replaced with the macro's current resolved value (selected list option text, bool text if ON / empty if OFF, or the number value) |
+
+---
+
+## ComfyUI Workflow Placeholders
+
+When using ComfyUI, you can use these placeholders in your workflow JSON. They are replaced with the actual values at generation time:
+
+| Placeholder | Replaced With |
+|-------------|--------------|
+| `"%prompt%"` | Final positive prompt (JSON-escaped) |
+| `"%negative_prompt%"` | Final negative prompt (JSON-escaped) |
+| `"%model%"` | Selected model name |
+| `"%vae%"` | Selected VAE name |
+| `"%sampler%"` | Selected sampler name |
+| `"%scheduler%"` | Selected scheduler name |
+| `"%steps%"` | Steps count |
+| `"%scale%"` | CFG Scale value |
+| `"%width%"` | Image width |
+| `"%height%"` | Image height |
+| `"%denoise%"` | Denoising strength |
+| `"%clip_skip%"` | Clip skip value |
+| `"%seed%"` | Seed value (-1 = random) |
+
+> **Note**: Placeholders must include the surrounding quotes in the workflow JSON, e.g., `"%prompt%"` not `%prompt%`, because the replacement includes JSON escaping.
+
+---
+
+## FAQ / Troubleshooting
+
+**Q: Images aren't generating.**
+- Make sure the extension is enabled (checkbox in the drawer).
+- Make sure prompt injection is enabled in the Prompt Injection tab.
+- Check the Connection tab — click the connect button and verify you see a green status dot.
+- Check the browser console (F12) for `[IGS]` prefixed error messages.
+
+**Q: The LLM isn't producing image tags.**
+- Check your prompt template in the Prompt Injection tab. Make sure it instructs the LLM to use the correct tag format (default: `<pic="...">`).
+- Make sure the injection frequency isn't set too high.
+- Check the position/depth settings — try `System (deep)` at depth 0.
+
+**Q: My LoRAs aren't being applied.**
+- Make sure the LoRA entries are enabled (checkbox in the editor).
+- Check that trigger words match text in recent messages (case-sensitivity setting matters).
+- Verify the LoRA prompt field contains the actual `<lora:name:weight>` tag.
+
+**Q: I switched profiles but my characters/styles are gone.**
+- Each main profile references specific sub-profiles. Check which style/character/LoRA profile is selected in the respective tabs.
+
+**Q: How do I use this with ComfyUI?**
+- Set server type to ComfyUI, enter your ComfyUI URL, and connect.
+- Select or create a workflow in the Connection tab.
+- Use the workflow placeholders (see table above) in your workflow JSON nodes.
+
+**Q: The Suite Hub is missing from screen.**
+- Type `/suitehub` in the chat to toggle it.
+- Or go to Suite Hub Settings → check "Show Suite Hub Window".
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.

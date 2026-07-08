@@ -50,7 +50,21 @@ Everything is organized through a **profile system** so you can save, swap, and 
 
 ## Installation
 
-1. Place this folder in your SillyTavern extensions directory:
+### Method 1: SillyTavern Extension Installer (Recommended)
+
+1. Open SillyTavern and click the **Extensions** button (puzzle piece icon) in the top bar.
+2. Click **Install Extension**.
+3. Paste the GitHub repository URL:
+   ```
+   https://github.com/maiky93/image-generation-suite
+   ```
+4. Click **Save** and reload the page when prompted.
+5. Find **Image Generation Suite** in the extensions list → expand it.
+6. Check **Enable Extension** and click **Open Settings** to configure.
+
+### Method 2: Manual Installation
+
+1. Clone or download this repository into your SillyTavern extensions directory:
    ```
    SillyTavern/data/default-user/extensions/third_party/image-generation-suite
    ```
@@ -201,7 +215,7 @@ Named art style definitions organized into **style profiles**. Each profile can 
 
 ---
 
-### Characters
+### Characters (W.I.P)
 
 Define character appearances for consistent image generation. Organized into **character profiles**.
 
@@ -226,16 +240,6 @@ Trigger-based LoRA entries that activate when keywords appear in recent chat mes
 | **Trigger Words** | Keywords that activate this entry when found in recent messages. |
 | **Case Sensitive** | Whether trigger matching is case-sensitive. |
 | **Enabled** | Toggle individual entries on/off. |
-
-#### AI LoRA Agent (Disabled)
-
-An optional LLM-powered classification system for smarter LoRA matching:
-
-| Setting | Description |
-|---------|-------------|
-| **Enable AI LoRA Agent** | Uses a secondary LLM call to classify which LoRAs are relevant to the current scene. |
-| **Min / Max Matches** | Constrain how many LoRAs the AI can select per message. |
-| **Connection Profile** | Which SillyTavern API connection to use for the classification call. |
 
 ---
 

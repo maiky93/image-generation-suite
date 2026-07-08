@@ -100,6 +100,9 @@ The **Suite Hub** is a floating, draggable window that provides quick access to 
 - **Dock** it to the left or right edge of the viewport — it collapses into a slim sidebar tab and expands on hover.
 - **Close** it with the X button; toggle visibility with the `/suitehub` slash command or the Suite Hub Settings toggle.
 
+**Retrigger Image Gen** button:
+sometimes the agent forgets a quote or changes it to "pic prompt" instead of "pic", that is just something that happens. instead of having to constantly swipe messages I added this button, if you edit the agent message so the prompt is correct you can hit this button and IGS will take over and still generate your image.
+
 ### Controls Tab
 
 | Control | Description |

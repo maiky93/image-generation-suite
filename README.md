@@ -176,7 +176,7 @@ Configure your image generation backend.
 
 #### ComfyUI Workflow Management (W.I.P.)
 
-When using ComfyUI, you get full workflow CRUD:
+When using ComfyUI, you get full workflow CRUD (I highly recommend using the built in ST sd extension workflow editor to make edits):
 - **Edit** — Open a full-screen JSON editor for the selected workflow.
 - **New** — Create a new empty workflow and open the editor.
 - **Rename** — Rename the selected workflow file.

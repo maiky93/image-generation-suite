@@ -38,7 +38,7 @@ function getRoleFromPosition(position) {
  * @param {object} macro - The macro definition from profile.customMacros.
  * @returns {string} The resolved text value.
  */
-function resolveCustomMacro(macro) {
+export function resolveCustomMacro(macro) {
     switch (macro.type) {
         case 'list': {
             const opt = macro.options && macro.options[macro.value];

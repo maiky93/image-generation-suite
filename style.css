@@ -1151,3 +1151,73 @@
     padding: 10px 16px;
     border-top: 1px solid var(--SmartThemeBorderColor, #444);
 }
+
+/* ============================================================
+   Re-roll Toolbar
+   ============================================================ */
+
+.igs-reroll-toolbar {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+/* Show on hover over the parent container */
+*:hover > .igs-reroll-toolbar,
+.igs-reroll-toolbar:hover {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.igs-reroll-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 6px;
+    background: var(--SmartThemeBlurTintColor, rgba(20, 20, 30, 0.85));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--SmartThemeBodyColor, #ddd);
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.igs-reroll-btn:hover {
+    background: var(--SmartThemeInputColor, rgba(40, 40, 60, 0.95));
+    border-color: var(--SmartThemeQuoteColor, #888);
+    transform: translateY(-1px);
+}
+
+.igs-reroll-btn:active {
+    transform: translateY(0);
+}
+
+.igs-reroll-btn i {
+    font-size: 0.9em;
+}
+
+/* Loading state */
+.igs-reroll-loading .igs-reroll-btn {
+    opacity: 0.6;
+    cursor: wait;
+    pointer-events: none;
+}
+
+.igs-reroll-loading .igs-reroll-btn i {
+    animation: igs-spin 1s linear infinite;
+}
+
+@keyframes igs-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

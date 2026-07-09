@@ -17,7 +17,7 @@ import {
     triggerDetection
 } from './src/detection.js';
 
-import { applyPromptGetters } from './src/insertion.js';
+import { applyPromptGetters, rerollNewPrompt } from './src/insertion.js';
 import { openSettingsModal, refreshModalUI } from './src/settingsModal.js';
 
 import { eventSource, event_types } from '../../../../script.js';
@@ -552,7 +552,7 @@ function registerSlashCommand() {
 
 /**
  * Scans the current chat history and binds dynamic prompt getters to any message cards
- * containing custom raw prompts.
+ * containing custom raw prompts. Also injects re-roll toolbars on image messages.
  */
 function scanAndApplyGetters() {
     const context = getContext();
@@ -562,6 +562,55 @@ function scanAndApplyGetters() {
             applyPromptGetters(message);
         }
     });
+    // Inject re-roll toolbars after a short delay to ensure DOM is ready
+    setTimeout(() => injectRerollToolbars(), 300);
+}
+
+/**
+ * Injects re-roll toolbar overlays on all IGS-generated image messages
+ * that don't already have one.
+ */
+function injectRerollToolbars() {
+    const context = getContext();
+    const chat = context.chat || [];
+
+    chat.forEach((message, index) => {
+        // Only target image messages (system/hidden messages with raw_prompt and image data)
+        if (!message?.extra?.raw_prompt || !message?.extra?.image) return;
+        if (!message.is_system) return; // Only hidden image messages
+
+        const $mes = $(`.mes[mesid="${index}"]`);
+        if ($mes.length === 0) return;
+
+        // Don't inject if already present
+        if ($mes.find('.igs-reroll-toolbar').length > 0) return;
+
+        // Find the image container within the message
+        const $imgContainer = $mes.find('.mes_img_container, .mes_block .mes_text img, .mes_block img').first().parent();
+        if ($imgContainer.length === 0) {
+            // Fallback: attach to the message block itself
+            const $mesBlock = $mes.find('.mes_block');
+            if ($mesBlock.length === 0) return;
+            $mesBlock.css('position', 'relative');
+            $mesBlock.append(getRerollToolbarHtml());
+        } else {
+            $imgContainer.css('position', 'relative');
+            $imgContainer.append(getRerollToolbarHtml());
+        }
+    });
+}
+
+/**
+ * Returns the HTML for the re-roll toolbar overlay.
+ * @returns {string} The toolbar HTML.
+ */
+function getRerollToolbarHtml() {
+    return `<div class="igs-reroll-toolbar">
+        <button class="igs-reroll-btn igs-reroll-new" title="Re-roll Prompt — Generate a new image prompt and image">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Re-roll Prompt</span>
+        </button>
+    </div>`;
 }
 
 /**
@@ -791,6 +840,32 @@ function setupUI() {
         triggerDetection();
     });
 
+    // Re-roll prompt button on image messages
+    $(document).on('click', '.igs-reroll-new', async function() {
+        const $btn = $(this);
+        const $toolbar = $btn.closest('.igs-reroll-toolbar');
+        const $mes = $btn.closest('.mes');
+        const mesId = parseInt($mes.attr('mesid'), 10);
+
+        if (isNaN(mesId)) {
+            toastr.error('Could not determine message index.');
+            return;
+        }
+
+        // Prevent double-clicks
+        if ($toolbar.hasClass('igs-reroll-loading')) return;
+
+        $toolbar.addClass('igs-reroll-loading');
+        $btn.prop('disabled', true);
+
+        try {
+            await rerollNewPrompt(mesId);
+        } finally {
+            $toolbar.removeClass('igs-reroll-loading');
+            $btn.prop('disabled', false);
+        }
+    });
+
     // Hub tab switching
     $(document).on('click', '.igs-hub-tab', function() {
         const tabId = $(this).data('hub-tab');
@@ -980,6 +1055,11 @@ $(function () {
         // Scan current chat history and register event listeners to re-apply getters on chat load
         scanAndApplyGetters();
         eventSource.on(event_types.CHAT_LOADED, scanAndApplyGetters);
+
+        // Also inject re-roll toolbars when new messages are rendered
+        eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, () => {
+            setTimeout(() => injectRerollToolbars(), 100);
+        });
 
         console.log('[IGS] Image Generation Suite extension loaded successfully.');
     })();

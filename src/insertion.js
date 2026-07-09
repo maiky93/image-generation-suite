@@ -1,10 +1,11 @@
 import { appendMediaToMessage, updateMessageBlock, eventSource, event_types, getRequestHeaders, substituteParams } from '../../../../../script.js';
 import { getContext } from '../../../../extensions.js';
-import { saveBase64AsFile, getCharaFilename } from '../../../../utils.js';
+import { saveBase64AsFile, getCharaFilename, regexFromString } from '../../../../utils.js';
 import { getMessageTimeStamp } from '../../../../RossAscends-mods.js';
 import { generateImage } from './connection.js';
-import { scanForTriggers, compileLoraPrompts } from './lora.js';
+import { scanForTriggers, compileLoraPrompts, compileLoraDescriptions } from './lora.js';
 import { getSettings, getActiveProfile } from './profiles.js';
+import { resolveCustomMacro } from './detection.js';
 
 /**
  * Compiles prompt template configurations, active style selections, and LoRA triggers into final generation strings.
@@ -443,4 +444,250 @@ export async function insertImageReplaceTag(messageIndex, originalTag, imageUrl,
     await eventSource.emit(event_types.MESSAGE_UPDATED, messageIndex);
 
     console.log('[IGS] Replaced tag with image in message:', messageIndex);
+}
+
+/**
+ * Builds the fully resolved injection prompt content from the active profile,
+ * including template, LoRA descriptions, character defining prompt, and custom macros.
+ * This replicates the logic from detection.js promptInjectionHandler but without
+ * the event/frequency/depth concerns.
+ *
+ * @param {object} profile - The active profile.
+ * @returns {Promise<string>} The fully resolved injection content.
+ */
+async function buildInjectionContent(profile) {
+    const settings = getSettings();
+    let injectionContent = profile.prompt.template || '';
+
+    // Scan for LoRA triggers in recent chat messages
+    const context = getContext();
+    const chat = context.chat || [];
+    const loraDepth = (profile.loras && profile.loras.depth) ? profile.loras.depth : 5;
+    const recentMessages = chat.slice(-loraDepth);
+    const matches = await scanForTriggers(profile, recentMessages);
+
+    if (matches.length > 0) {
+        const loraDescriptions = compileLoraDescriptions(matches);
+        if (loraDescriptions) {
+            injectionContent += '\n' + loraDescriptions;
+        }
+    }
+
+    // Append character defining prompt if a character is selected
+    const charProfileId = profile.activeCharacterProfileId;
+    const charProfile = charProfileId && settings.characterProfiles?.[charProfileId];
+    const characters = charProfile?.characters || [];
+    if (profile.activeCharacterId && characters.length > 0) {
+        const selectedChar = characters.find(c => c.id === profile.activeCharacterId);
+        if (selectedChar && selectedChar.prompt) {
+            let charDefining = profile.promptConstruction?.characterDefining || '';
+            if (charDefining) {
+                charDefining = charDefining.replace(/\{character\}/g, selectedChar.prompt);
+
+                let outfitsList = '';
+                if (selectedChar.outfits && selectedChar.outfits.length > 0) {
+                    outfitsList = selectedChar.outfits
+                        .filter(o => o.name && o.description)
+                        .map(o => `"${o.name}, ${o.description}"`)
+                        .join(',\n');
+                }
+                charDefining = charDefining.replace(/\{outfits\}/g, outfitsList);
+
+                injectionContent += '\n' + charDefining;
+            }
+        }
+    }
+
+    // Resolve custom macros
+    if (profile.customMacros && profile.customMacros.length > 0) {
+        for (const macro of profile.customMacros) {
+            const resolved = resolveCustomMacro(macro);
+            injectionContent = injectionContent.replaceAll(`{${macro.id}}`, resolved);
+        }
+    }
+
+    return injectionContent;
+}
+
+/**
+ * Replaces the image on an existing message in-place, adding to swipes.
+ * Does NOT create a new message.
+ *
+ * @param {number} messageIndex - The chat index of the image message.
+ * @param {string} newImageUrl - The URL of the new image.
+ * @param {string} prompt - The compiled positive prompt.
+ * @param {string} negativePrompt - The compiled negative prompt.
+ * @param {string} rawPrompt - The raw prompt text.
+ * @param {string} loraPrompts - The compiled LoRA prompts.
+ */
+function replaceImageOnMessage(messageIndex, newImageUrl, prompt, negativePrompt, rawPrompt, loraPrompts) {
+    const context = getContext();
+    const message = context.chat[messageIndex];
+    if (!message || !message.extra) return;
+
+    // Update raw prompt and LoRA prompts
+    message.extra.raw_prompt = rawPrompt;
+    message.extra.negative_raw = negativePrompt;
+    message.extra.lora_prompts = loraPrompts || '';
+
+    // Update image URL
+    message.extra.image = newImageUrl;
+    message.extra.inline_image = true;
+
+    // Add to swipes array
+    if (!Array.isArray(message.extra.image_swipes)) {
+        message.extra.image_swipes = [];
+    }
+    message.extra.image_swipes.push(newImageUrl);
+
+    // Update media array
+    message.extra.media = [{
+        url: newImageUrl,
+        type: 'image',
+        title: prompt,
+        negative: negativePrompt,
+        source: 'generated',
+    }];
+    message.extra.media_index = 0;
+
+    // Re-apply prompt getters
+    applyPromptGetters(message);
+
+    // Re-render the message
+    const messageElement = $(`.mes[mesid="${messageIndex}"]`);
+    appendMediaToMessage(message, messageElement);
+}
+
+/**
+ * Re-rolls the image prompt by sending a quiet LLM call with the full injection
+ * template (macros, characters, LoRAs), then generates a new image and adds it
+ * to swipes on the image message.
+ *
+ * @param {number} imageMessageIndex - The chat index of the image message (message #3).
+ * @returns {Promise<boolean>} True on success, false on failure.
+ */
+export async function rerollNewPrompt(imageMessageIndex) {
+    const context = getContext();
+    const chat = context.chat || [];
+    const imageMessage = chat[imageMessageIndex];
+
+    if (!imageMessage || !imageMessage.extra) {
+        toastr.error('Could not find the image message.');
+        return false;
+    }
+
+    // Find the parent assistant message (scan backwards for a non-system, non-user message)
+    let parentIndex = null;
+    for (let i = imageMessageIndex - 1; i >= 0; i--) {
+        if (!chat[i].is_user && !chat[i].is_system) {
+            parentIndex = i;
+            break;
+        }
+    }
+
+    if (parentIndex === null) {
+        toastr.error('Could not find the parent assistant message.');
+        return false;
+    }
+
+    const parentMessage = chat[parentIndex];
+    const profile = getActiveProfile();
+    if (!profile) {
+        toastr.error('No active profile.');
+        return false;
+    }
+
+    // Check generateQuietPrompt availability
+    const generateQuietPrompt = context.generateQuietPrompt;
+    if (typeof generateQuietPrompt !== 'function') {
+        toastr.error('generateQuietPrompt is not available. Cannot re-roll prompt.');
+        return false;
+    }
+
+    try {
+        // Build the full injection content with current macros/characters/LoRAs
+        const injectionContent = await buildInjectionContent(profile);
+
+        // Build the quiet prompt including the parent message as context
+        const quietPrompt = `[System instructions]\n${injectionContent}\n[End System instructions]\n\n[Current scene to describe]\n${parentMessage.mes}\n[End scene]\n\nBased on the scene above, generate your response with the image tag.`;
+
+        console.log('[IGS] Re-roll prompt: sending quiet LLM call...');
+
+        const rawResponse = await generateQuietPrompt({
+            quietPrompt: quietPrompt,
+            skipWIAN: true,
+            responseLength: 500,
+        });
+
+        console.log('[IGS] Re-roll prompt: LLM response received');
+
+        // Parse the response for image tags using the profile's regex
+        const regexStr = profile.settings?.regex;
+        if (!regexStr) {
+            toastr.error('No detection regex configured.');
+            return false;
+        }
+
+        const regex = regexFromString(regexStr);
+        if (!regex) {
+            toastr.error('Failed to parse detection regex.');
+            return false;
+        }
+
+        const globalRegex = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g');
+        const allMatches = [...rawResponse.matchAll(globalRegex)];
+
+        if (allMatches.length === 0) {
+            toastr.warning('LLM response did not contain an image tag. Try again.');
+            console.log('[IGS] Re-roll prompt: no tags found in response:', rawResponse);
+            return false;
+        }
+
+        const newRawPrompt = allMatches[0][1] || '';
+        const newOriginalTag = allMatches[0][0];
+
+        console.log('[IGS] Re-roll prompt: new raw prompt:', newRawPrompt);
+
+        // Update the <pic> tag in the parent message
+        const oldRegex = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g');
+        const oldMatches = [...(parentMessage.mes || '').matchAll(oldRegex)];
+        if (oldMatches.length > 0) {
+            // Replace the last (most recent) tag in the parent message
+            const lastOldTag = oldMatches[oldMatches.length - 1][0];
+            parentMessage.mes = parentMessage.mes.replace(lastOldTag, newOriginalTag);
+            updateMessageBlock(parentIndex, parentMessage);
+        }
+
+        // Compile prompts from the new raw prompt
+        const compiled = await compilePrompts(profile, newRawPrompt, parentIndex);
+        const fullPositivePrompt = compiled.positive;
+        const fullNegativePrompt = compiled.negative;
+        const loraPrompts = compiled.loraPrompts || '';
+
+        // Generate the image
+        const result = await generateImage(profile, fullPositivePrompt, fullNegativePrompt);
+
+        if (!result || !result.data) {
+            toastr.error('Image generation returned no data.');
+            return false;
+        }
+
+        // Save image file
+        const charaFilename = getCharaFilename() || 'unknown';
+        const imageUrl = await saveBase64AsFile(result.data, charaFilename, '', result.format);
+
+        // Replace image on the image message (adds to swipes)
+        replaceImageOnMessage(imageMessageIndex, imageUrl, fullPositivePrompt, fullNegativePrompt, newRawPrompt, loraPrompts);
+
+        // Save chat
+        await context.saveChat();
+
+        toastr.success('Image re-rolled with new prompt!');
+        console.log('[IGS] Re-roll prompt complete');
+        return true;
+    } catch (error) {
+        console.error('[IGS] Re-roll prompt error:', error);
+        toastr.error('Re-roll failed: ' + error.message);
+        return false;
+    }
 }
